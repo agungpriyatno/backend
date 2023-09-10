@@ -8,6 +8,7 @@ import (
 func Router(app *fiber.App) {
 	base := app.Group("/api")
 
+	base.Get("/query/", handlers.GetHeader)
 	base.Get("/query/:dimension", handlers.Query)
 
 	// lokasi

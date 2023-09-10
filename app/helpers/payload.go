@@ -5,9 +5,10 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
-func GetPayload(ctx *fiber.Ctx) (payload.Location, payload.Time) {
+func GetPayload(ctx *fiber.Ctx) (payload.Location, payload.Time, payload.Other) {
 	var location payload.Location
 	var time payload.Time
+	var other payload.Other
 
 	location.Pulau = ctx.Query("pulau", "")
 	location.Provinsi = ctx.Query("provinsi", "")
@@ -18,7 +19,11 @@ func GetPayload(ctx *fiber.Ctx) (payload.Location, payload.Time) {
 	time.Semester = ctx.Query("semester", "")
 	time.Kuartal = ctx.Query("kuartal", "")
 	time.Bulan = ctx.Query("bulan", "")
+	time.Hari = ctx.Query("hari", "")
 
-	return location, time
+	other.Confidence = ctx.Query("confidence", "")
+	other.Satelite = ctx.Query("satelite", "")
+
+	return location, time, other
 
 }

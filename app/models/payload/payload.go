@@ -12,4 +12,10 @@ type Time struct {
 	Semester string
 	Kuartal  string
 	Bulan    string
+	Hari     string
+}
+
+type Other struct {
+	Confidence string
+	Satelite   string
 }

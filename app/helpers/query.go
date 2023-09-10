@@ -1,13 +1,15 @@
 package helpers
 
 import (
+	"log"
+
 	"github.com/agungpriyatno/olap-backend/app/configs/clients"
 	"github.com/agungpriyatno/olap-backend/app/models"
 	"github.com/agungpriyatno/olap-backend/app/models/payload"
 	"github.com/xdbsoft/olap"
 )
 
-func SQLtoCube() (olap.Cube, error) {
+func SQLtoCube(oth payload.Other) (olap.Cube, error) {
 	var count int64
 	var list []models.Hotspot
 	var data [][]interface{}
@@ -18,9 +20,20 @@ func SQLtoCube() (olap.Cube, error) {
 		Fields:     []string{"total"},
 	}
 
+	where := make(map[string]interface{})
+
+	if oth.Confidence != "" {
+		log.Println("hello")
+		where["Confidence.Level"] = oth.Confidence
+	}
+
+	if oth.Satelite != "" {
+		where["Satelite.Name"] = oth.Satelite
+	}
+
 	if err := clients.DATABASE.Model(&models.Hotspot{}).
-		Preload("Location").Preload("Confidence").
-		Preload("Time").Preload("Satelite").
+		Preload("Location").Joins("Confidence").
+		Preload("Time").Joins("Satelite").Where(where).
 		Find(&list).Count(&count).Error; err != nil {
 		return cube, err
 	}
@@ -44,7 +57,7 @@ func SQLtoCube() (olap.Cube, error) {
 // kita permudah biar lebih enak dilihat
 // Asu laa tidak bisa
 
-func CubeLocation(param payload.Location) (olap.Cube, error) {
+func CubeLocation(param payload.Location, oth payload.Other) (olap.Cube, error) {
 	var count int64
 	var list []models.Hotspot
 	var data [][]interface{}
@@ -55,6 +68,14 @@ func CubeLocation(param payload.Location) (olap.Cube, error) {
 	}
 
 	where := make(map[string]interface{})
+
+	if oth.Confidence != "" {
+		where["Confidence.Level"] = oth.Confidence
+	}
+
+	if oth.Satelite != "" {
+		where["Satelite.Name"] = oth.Satelite
+	}
 
 	if param.Kecamatan != "" {
 		where["Location.Kecamatan"] = param.Kecamatan
@@ -75,8 +96,8 @@ func CubeLocation(param payload.Location) (olap.Cube, error) {
 	print(where["Location.Kota"])
 
 	if err := clients.DATABASE.Model(&models.Hotspot{}).
-		Joins("Location").Preload("Confidence").
-		Preload("Time").Preload("Satelite").Where(where).
+		Joins("Location").Joins("Confidence").
+		Preload("Time").Joins("Satelite").Where(where).
 		Find(&list).Count(&count).Error; err != nil {
 		return cube, err
 	}
@@ -107,7 +128,7 @@ func CubeLocation(param payload.Location) (olap.Cube, error) {
 	return cube, nil
 }
 
-func CubeTime(param payload.Time) (olap.Cube, error) {
+func CubeTime(param payload.Time, oth payload.Other) (olap.Cube, error) {
 	var count int64
 	var list []models.Hotspot
 	var data [][]interface{}
@@ -118,6 +139,18 @@ func CubeTime(param payload.Time) (olap.Cube, error) {
 	}
 
 	where := make(map[string]interface{})
+
+	if oth.Confidence != "" {
+		where["Confidence.Level"] = oth.Confidence
+	}
+
+	if oth.Satelite != "" {
+		where["Satelite.Name"] = oth.Satelite
+	}
+
+	if param.Hari != "" {
+		where["Time.Hari"] = param.Hari
+	}
 
 	if param.Bulan != "" {
 		where["Time.Bulan"] = param.Bulan
@@ -136,8 +169,8 @@ func CubeTime(param payload.Time) (olap.Cube, error) {
 	}
 
 	if err := clients.DATABASE.Model(&models.Hotspot{}).
-		Preload("Location").Preload("Confidence").
-		Joins("Time").Preload("Satelite").Where(where).
+		Preload("Location").Joins("Confidence").
+		Joins("Time").Joins("Satelite").Where(where).
 		Find(&list).Count(&count).Error; err != nil {
 		return cube, err
 	}
@@ -168,7 +201,7 @@ func CubeTime(param payload.Time) (olap.Cube, error) {
 	return cube, nil
 }
 
-func CubeTimeLocation(param payload.Time, loc payload.Location) (olap.Cube, error) {
+func CubeTimeLocation(param payload.Time, loc payload.Location, oth payload.Other) (olap.Cube, error) {
 	var count int64
 	var list []models.Hotspot
 	var data [][]interface{}
@@ -180,6 +213,18 @@ func CubeTimeLocation(param payload.Time, loc payload.Location) (olap.Cube, erro
 
 	where := make(map[string]interface{})
 	whereLoc := make(map[string]interface{})
+
+	if oth.Confidence != "" {
+		where["Confidence.Level"] = oth.Confidence
+	}
+
+	if oth.Satelite != "" {
+		where["Satelite.Name"] = oth.Satelite
+	}
+
+	if param.Hari != "" {
+		where["Time.Hari"] = param.Hari
+	}
 
 	if param.Bulan != "" {
 		where["Time.Bulan"] = param.Bulan
@@ -214,8 +259,8 @@ func CubeTimeLocation(param payload.Time, loc payload.Location) (olap.Cube, erro
 	}
 
 	if err := clients.DATABASE.Model(&models.Hotspot{}).
-		Joins("Location").Preload("Confidence").
-		Joins("Time").Preload("Satelite").Where(where).Where(whereLoc).
+		Joins("Location").Joins("Confidence").
+		Joins("Time").Joins("Satelite").Where(where).Where(whereLoc).
 		Find(&list).Count(&count).Error; err != nil {
 		return cube, err
 	}

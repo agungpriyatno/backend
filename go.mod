@@ -5,7 +5,7 @@ go 1.21.0
 require (
 	github.com/gofiber/fiber/v2 v2.49.0
 	github.com/joho/godotenv v1.5.1
-	github.com/lithammer/shortuuid v3.0.0+incompatible
+	github.com/xdbsoft/olap v0.0.0-20180528065716-f684b159e995
 	gorm.io/driver/mysql v1.5.1
 	gorm.io/gorm v1.25.4
 )
@@ -24,6 +24,5 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/valyala/fasthttp v1.48.0 // indirect
 	github.com/valyala/tcplisten v1.0.0 // indirect
-	github.com/xdbsoft/olap v0.0.0-20180528065716-f684b159e995 // indirect
 	golang.org/x/sys v0.11.0 // indirect
 )
